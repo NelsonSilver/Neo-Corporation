@@ -2,505 +2,713 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Neo Corporation</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Neo Corporation — AI Research & Technology</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Syne:wght@400;600;700&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --black: #040d1a;
-      --white: #e8f0ff;
-      --accent: #2979ff;
-      --accent-bright: #5b9aff;
-      --dim: #081428;
-      --border: #0f2040;
-      --muted: #4a6080;
+      --bg: #050810;
+      --bg2: #080d1a;
+      --surface: #0d1526;
+      --cyan: #00e5ff;
+      --amber: #ffb300;
+      --white: #e8edf5;
+      --muted: #5a6a8a;
+      --border: rgba(0,229,255,0.12);
     }
 
     html { scroll-behavior: smooth; }
 
     body {
-      background: var(--black);
+      background: var(--bg);
       color: var(--white);
       font-family: 'Syne', sans-serif;
       overflow-x: hidden;
     }
 
+    /* ── NOISE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+    }
+
     /* ── NAV ── */
     nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 1.5rem 3rem;
-      border-bottom: 1px solid var(--border);
-      background: rgba(4,13,26,0.88);
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.4rem 4rem;
       backdrop-filter: blur(12px);
+      background: rgba(5,8,16,0.7);
+      border-bottom: 1px solid var(--border);
     }
-    .nav-logo {
-      font-size: 1.1rem; font-weight: 800; letter-spacing: 0.08em;
-      color: var(--accent); text-decoration: none;
+
+    .logo {
+      font-family: 'Orbitron', monospace;
+      font-weight: 900;
+      font-size: 1.1rem;
+      letter-spacing: 0.15em;
+      color: var(--white);
+      text-decoration: none;
     }
-    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
-    .nav-links a {
-      font-family: 'DM Mono', monospace; font-size: 0.78rem;
-      color: var(--muted); text-decoration: none; letter-spacing: 0.05em;
+    .logo span { color: var(--cyan); }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 2.5rem;
+    }
+    nav ul a {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      text-decoration: none;
+      text-transform: uppercase;
       transition: color 0.2s;
     }
-    .nav-links a:hover { color: var(--white); }
+    nav ul a:hover { color: var(--cyan); }
 
     /* ── HERO ── */
     .hero {
       min-height: 100vh;
-      display: flex; flex-direction: column; justify-content: flex-end;
-      padding: 0 3rem 5rem;
-      position: relative; overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 10rem 4rem 6rem;
+      position: relative;
+      overflow: hidden;
     }
-    .hero-grid {
-      position: absolute; inset: 0;
+
+    /* Grid background */
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
       background-image:
-        linear-gradient(var(--border) 1px, transparent 1px),
-        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+        linear-gradient(rgba(0,229,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,229,255,0.04) 1px, transparent 1px);
       background-size: 60px 60px;
-      opacity: 0.35;
-    }
-    .hero-glow {
-      position: absolute; top: 20%; right: 10%;
-      width: 500px; height: 500px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(41,121,255,0.10) 0%, transparent 70%);
+      mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black, transparent);
       pointer-events: none;
     }
-    .hero-tag {
-      font-family: 'DM Mono', monospace; font-size: 0.75rem;
-      color: var(--accent); letter-spacing: 0.12em;
-      margin-bottom: 1.5rem;
-      opacity: 0; animation: fadeUp 0.8s 0.2s forwards;
-    }
-    .hero-title {
-      font-size: clamp(3.5rem, 8vw, 7rem);
-      font-weight: 800; line-height: 0.95;
-      letter-spacing: -0.03em;
-      max-width: 900px;
-      opacity: 0; animation: fadeUp 0.8s 0.4s forwards;
-    }
-    .hero-title span { color: var(--accent); }
-    .hero-sub {
-      margin-top: 2rem; max-width: 520px;
-      font-family: 'DM Mono', monospace; font-size: 0.9rem;
-      color: var(--muted); line-height: 1.7;
-      opacity: 0; animation: fadeUp 0.8s 0.6s forwards;
-    }
-    .hero-cta {
-      margin-top: 3rem; display: flex; gap: 1rem; flex-wrap: wrap;
-      opacity: 0; animation: fadeUp 0.8s 0.8s forwards;
-    }
-    .btn {
-      font-family: 'DM Mono', monospace; font-size: 0.8rem;
-      letter-spacing: 0.08em; text-decoration: none;
-      padding: 0.85rem 2rem; border-radius: 2px;
-      transition: all 0.2s; cursor: pointer; border: none;
-    }
-    .btn-primary {
-      background: var(--accent); color: var(--black); font-weight: 500;
-    }
-    .btn-primary:hover { background: var(--accent-bright); transform: translateY(-2px); }
-    .btn-outline {
-      background: transparent; color: var(--white);
-      border: 1px solid var(--border);
-    }
-    .btn-outline:hover { border-color: var(--white); transform: translateY(-2px); }
 
-    /* ── SECTIONS ── */
-    section {
-      padding: 6rem 3rem;
-      border-top: 1px solid var(--border);
+    /* Glow orb */
+    .glow-orb {
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,229,255,0.08) 0%, transparent 70%);
+      top: 50%; left: 60%;
+      transform: translate(-50%,-50%);
+      pointer-events: none;
+      animation: pulse 6s ease-in-out infinite;
     }
-    .section-label {
-      font-family: 'DM Mono', monospace; font-size: 0.72rem;
-      color: var(--accent); letter-spacing: 0.15em;
+    .glow-orb2 {
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,179,0,0.06) 0%, transparent 70%);
+      top: 30%; left: 20%;
+      transform: translate(-50%,-50%);
+      pointer-events: none;
+      animation: pulse 8s ease-in-out infinite reverse;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+      50% { opacity: 0.6; transform: translate(-50%,-50%) scale(1.1); }
+    }
+
+    .hero-tag {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      color: var(--cyan);
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.2s forwards;
+    }
+
+    .hero h1 {
+      font-family: 'Orbitron', monospace;
+      font-weight: 900;
+      font-size: clamp(2.8rem, 6vw, 5.5rem);
+      line-height: 1.05;
+      max-width: 800px;
+      margin-bottom: 1.8rem;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.4s forwards;
+    }
+    .hero h1 em {
+      font-style: normal;
+      color: var(--cyan);
+    }
+
+    .hero-sub {
+      font-size: 1.05rem;
+      color: #8a9bc0;
+      max-width: 520px;
+      line-height: 1.7;
+      margin-bottom: 2.8rem;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.6s forwards;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.8s forwards;
+    }
+
+    .btn-primary {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.9rem 2rem;
+      background: var(--cyan);
+      color: var(--bg);
+      border: none;
+      text-decoration: none;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+    }
+    .btn-primary:hover {
+      background: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 0 30px rgba(0,229,255,0.4);
+    }
+
+    .btn-secondary {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.9rem 2rem;
+      background: transparent;
+      color: var(--white);
+      border: 1px solid var(--border);
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-secondary:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    .hero-origin {
+      position: absolute;
+      bottom: 3rem; right: 4rem;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      writing-mode: vertical-rl;
+      opacity: 0;
+      animation: fadeUp 1s 1.2s forwards;
+    }
+    .hero-origin span { color: var(--amber); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── STATS BAR ── */
+    .stats-bar {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg2);
+      padding: 2rem 4rem;
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+    .stat {
+      text-align: center;
+    }
+    .stat-num {
+      font-family: 'Orbitron', monospace;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--cyan);
+      display: block;
+    }
+    .stat-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-top: 0.3rem;
+    }
+
+    /* ── SECTION SHARED ── */
+    section {
+      padding: 6rem 4rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .section-tag {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      color: var(--amber);
+      text-transform: uppercase;
       margin-bottom: 1rem;
     }
+
     .section-title {
-      font-size: clamp(2rem, 4vw, 3rem);
-      font-weight: 800; line-height: 1.1;
-      letter-spacing: -0.02em;
-      max-width: 700px;
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 700;
+      margin-bottom: 1.2rem;
+      line-height: 1.2;
     }
 
-    /* ── WHAT WE DO ── */
-    .cards {
-      margin-top: 4rem;
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5px; background: var(--border);
+    /* ── RESEARCH SECTION ── */
+    #research {
+      background: var(--bg2);
     }
-    .card {
-      background: var(--black); padding: 2.5rem;
-      transition: background 0.3s;
+
+    .research-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+      margin-top: 3rem;
     }
-    .card:hover { background: var(--dim); }
+
+    .research-card {
+      background: var(--surface);
+      padding: 2rem;
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s;
+    }
+    .research-card:hover {
+      border-color: rgba(0,229,255,0.35);
+    }
+    .research-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px;
+      height: 100%;
+      background: var(--cyan);
+      transform: scaleY(0);
+      transform-origin: bottom;
+      transition: transform 0.3s;
+    }
+    .research-card:hover::before { transform: scaleY(1); }
+
     .card-icon {
-      font-size: 1.6rem; margin-bottom: 1.5rem;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
     }
     .card-title {
-      font-size: 1.05rem; font-weight: 700;
-      margin-bottom: 0.75rem; letter-spacing: -0.01em;
+      font-family: 'Orbitron', monospace;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--cyan);
+      margin-bottom: 0.6rem;
+      text-transform: uppercase;
     }
-    .card-text {
-      font-family: 'DM Mono', monospace; font-size: 0.82rem;
-      color: var(--muted); line-height: 1.7;
+    .card-result {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 1.6rem;
+      font-weight: 500;
+      color: var(--white);
+      margin-bottom: 0.5rem;
+    }
+    .card-desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.6;
     }
 
-    /* ── HCASFE ── */
-    .hcasfe-layout {
-      margin-top: 4rem;
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 4rem; align-items: start;
+    /* HCASFE highlight */
+    .hcasfe-highlight {
+      margin-top: 3rem;
+      padding: 2.5rem;
+      border: 1px solid var(--border);
+      background: linear-gradient(135deg, rgba(0,229,255,0.04), rgba(255,179,0,0.03));
+      position: relative;
+      overflow: hidden;
+    }
+    .hcasfe-highlight::after {
+      content: 'HCASFE-NET';
+      position: absolute;
+      right: 2rem; top: 50%;
+      transform: translateY(-50%);
+      font-family: 'Orbitron', monospace;
+      font-size: 4rem;
+      font-weight: 900;
+      color: rgba(0,229,255,0.04);
+      letter-spacing: 0.1em;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    .hcasfe-name {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.8rem;
+      color: var(--amber);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 0.8rem;
+    }
+    .hcasfe-full {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 1rem;
+      font-style: italic;
     }
     .hcasfe-desc {
-      font-family: 'DM Mono', monospace; font-size: 0.88rem;
-      color: var(--muted); line-height: 1.8;
-    }
-    .hcasfe-desc p + p { margin-top: 1rem; }
-    .hcasfe-desc strong { color: var(--white); font-weight: 500; }
-    .metrics {
-      display: flex; flex-direction: column; gap: 1.5px;
-      background: var(--border);
-    }
-    .metric {
-      background: var(--dim); padding: 1.5rem 2rem;
-      display: flex; justify-content: space-between; align-items: center;
-    }
-    .metric-label {
-      font-family: 'DM Mono', monospace; font-size: 0.78rem;
-      color: var(--muted);
-    }
-    .metric-value {
-      font-size: 1.4rem; font-weight: 800;
-      color: var(--accent); letter-spacing: -0.02em;
-    }
-    .components {
-      margin-top: 1.5px; background: var(--border);
-    }
-    .component-row {
-      background: var(--dim); padding: 1rem 2rem;
-      display: flex; gap: 1rem; align-items: center;
-      font-family: 'DM Mono', monospace; font-size: 0.78rem;
-      border-bottom: 1px solid var(--border);
-    }
-    .component-row:last-child { border-bottom: none; }
-    .component-tag {
-      color: var(--accent); min-width: 120px; font-weight: 500;
-    }
-    .component-desc { color: var(--muted); }
-
-    /* ── VISION ── */
-    .vision-text {
-      margin-top: 3rem; max-width: 760px;
-      font-size: clamp(1.2rem, 2.5vw, 1.7rem);
-      font-weight: 600; line-height: 1.5;
-      color: var(--muted);
-    }
-    .vision-text em { color: var(--white); font-style: normal; }
-    .vision-text .hl { color: var(--accent); font-style: normal; }
-
-    /* ── TEAM ── */
-    .team-card {
-      margin-top: 4rem; max-width: 480px;
-      background: var(--dim); border: 1px solid var(--border);
-      padding: 2.5rem;
-    }
-    .team-name {
-      font-size: 1.4rem; font-weight: 800;
-      letter-spacing: -0.02em; margin-bottom: 0.4rem;
-    }
-    .team-role {
-      font-family: 'DM Mono', monospace; font-size: 0.78rem;
-      color: var(--accent); letter-spacing: 0.08em;
+      font-size: 0.95rem;
+      color: #8a9bc0;
+      line-height: 1.7;
+      max-width: 650px;
       margin-bottom: 1.5rem;
     }
-    .team-bio {
-      font-family: 'DM Mono', monospace; font-size: 0.82rem;
-      color: var(--muted); line-height: 1.7;
-    }
-    .team-tags {
-      margin-top: 1.5rem; display: flex; flex-wrap: wrap; gap: 0.5rem;
-    }
-    .tag {
-      font-family: 'DM Mono', monospace; font-size: 0.72rem;
-      padding: 0.3rem 0.75rem; border: 1px solid var(--border);
-      color: var(--muted); border-radius: 2px;
+
+    /* ── ABOUT ── */
+    #about {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
     }
 
+    .about-visual {
+      position: relative;
+      height: 360px;
+    }
+    .about-box {
+      position: absolute;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Orbitron', monospace;
+    }
+    .about-box-1 {
+      width: 240px; height: 240px;
+      top: 0; left: 0;
+      background: var(--surface);
+      font-size: 0.6rem;
+      color: var(--muted);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      animation: floatA 6s ease-in-out infinite;
+    }
+    .about-box-2 {
+      width: 160px; height: 160px;
+      bottom: 0; right: 0;
+      border-color: rgba(255,179,0,0.2);
+      background: rgba(255,179,0,0.04);
+      font-size: 0.55rem;
+      color: var(--amber);
+      letter-spacing: 0.12em;
+      animation: floatB 7s ease-in-out infinite;
+    }
+    .about-box-3 {
+      width: 100px; height: 100px;
+      bottom: 40px; left: 180px;
+      border-color: rgba(0,229,255,0.3);
+      background: rgba(0,229,255,0.06);
+      font-size: 1.4rem;
+      animation: floatA 5s ease-in-out infinite reverse;
+    }
+    @keyframes floatA {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+    @keyframes floatB {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-8px) rotate(2deg); }
+    }
+
+    .about-text p {
+      font-size: 0.95rem;
+      color: #8a9bc0;
+      line-height: 1.8;
+      margin-bottom: 1.2rem;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-top: 1.5rem;
+    }
+    .tag {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      padding: 0.35rem 0.8rem;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+    .tag.cyan { border-color: rgba(0,229,255,0.3); color: var(--cyan); }
+    .tag.amber { border-color: rgba(255,179,0,0.3); color: var(--amber); }
+
     /* ── CONTACT ── */
-    .contact-grid {
-      margin-top: 4rem;
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1.5px; background: var(--border); max-width: 700px;
+    #contact {
+      background: var(--bg2);
+      text-align: center;
     }
-    .contact-item {
-      background: var(--dim); padding: 2rem;
+    #contact .section-title { margin-bottom: 0.6rem; }
+    #contact p {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 2.5rem;
+      font-family: 'IBM Plex Mono', monospace;
     }
-    .contact-type {
-      font-family: 'DM Mono', monospace; font-size: 0.72rem;
-      color: var(--muted); letter-spacing: 0.1em; margin-bottom: 0.75rem;
+
+    .contact-box {
+      display: inline-block;
+      border: 1px solid var(--border);
+      padding: 2.5rem 4rem;
+      position: relative;
+      background: var(--surface);
     }
-    .contact-value {
-      font-size: 0.9rem; font-weight: 600;
-      color: var(--white); text-decoration: none;
-      transition: color 0.2s;
+    .contact-box::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      background: linear-gradient(135deg, var(--cyan), var(--amber));
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 0.3s;
     }
-    .contact-value:hover { color: var(--accent); }
+    .contact-box:hover::before { opacity: 0.15; }
+
+    .contact-email {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.05em;
+    }
+    .contact-email a {
+      color: var(--cyan);
+      text-decoration: none;
+    }
+    .contact-email a:hover { text-decoration: underline; }
 
     /* ── FOOTER ── */
     footer {
-      padding: 2.5rem 3rem;
+      padding: 2rem 4rem;
       border-top: 1px solid var(--border);
-      display: flex; justify-content: space-between; align-items: center;
-      flex-wrap: wrap; gap: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
     }
-    .footer-left {
-      font-family: 'DM Mono', monospace; font-size: 0.75rem;
+    .footer-logo {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.8rem;
+      font-weight: 900;
       color: var(--muted);
+      letter-spacing: 0.15em;
     }
-    .footer-left span { color: var(--accent); }
-    .footer-right {
-      font-family: 'DM Mono', monospace; font-size: 0.75rem;
+    .footer-logo span { color: var(--cyan); }
+    .footer-copy {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
       color: var(--muted);
+      letter-spacing: 0.08em;
     }
+    .footer-origin {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+    }
+    .footer-origin span { color: var(--amber); }
 
-    /* ── ANIMATIONS ── */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(24px); }
-      to   { opacity: 1; transform: translateY(0); }
+    /* ── SCROLL LINE ── */
+    .scroll-line {
+      position: fixed;
+      top: 0; left: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--cyan), var(--amber));
+      z-index: 999;
+      transition: width 0.1s;
     }
-    .reveal {
-      opacity: 0; transform: translateY(20px);
-      transition: opacity 0.6s ease, transform 0.6s ease;
-    }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
 
     /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
       nav { padding: 1.2rem 1.5rem; }
-      .nav-links { display: none; }
-      .hero, section { padding-left: 1.5rem; padding-right: 1.5rem; }
-      .hcasfe-layout { grid-template-columns: 1fr; gap: 2.5rem; }
-      footer { flex-direction: column; align-items: flex-start; }
+      nav ul { display: none; }
+      .hero { padding: 8rem 1.5rem 4rem; }
+      section { padding: 4rem 1.5rem; }
+      .stats-bar { padding: 1.5rem; }
+      .research-grid { grid-template-columns: 1fr; }
+      #about { grid-template-columns: 1fr; }
+      .about-visual { display: none; }
+      footer { padding: 1.5rem; flex-direction: column; text-align: center; }
+      .hero-origin { display: none; }
+      .contact-box { padding: 2rem; }
     }
   </style>
 </head>
 <body>
 
+  <div class="scroll-line" id="scrollLine"></div>
+
   <!-- NAV -->
   <nav>
-    <a href="#" class="nav-logo">NEO CORP</a>
-    <ul class="nav-links">
-      <li><a href="#what-we-do">what we do</a></li>
-      <li><a href="#hcasfe">hcasfe-net</a></li>
-      <li><a href="#vision">vision</a></li>
-      <li><a href="#team">team</a></li>
-      <li><a href="#contact">contact</a></li>
+    <a class="logo" href="#">NEO<span>.</span>CORP</a>
+    <ul>
+      <li><a href="#research">Research</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
     </ul>
   </nav>
 
   <!-- HERO -->
   <section class="hero">
-    <div class="hero-grid"></div>
-    <div class="hero-glow"></div>
-    <div style="position:absolute;bottom:15%;left:5%;width:350px;height:350px;border-radius:50%;background:radial-gradient(circle,rgba(41,121,255,0.06) 0%,transparent 70%);pointer-events:none;"></div>
-    <p class="hero-tag">// KAMPALA, UGANDA — FOUNDED 2026</p>
-    <h1 class="hero-title">
-      Building the<br/>
-      <span>next layer</span><br/>
-      of intelligence.
-    </h1>
-    <p class="hero-sub">
-      Neo Corporation is an AI research and products company.
-      We build architectures that think differently —
-      with memory, causality, and time built in from the ground up.
-    </p>
-    <div class="hero-cta">
-      <a href="https://nelsonsilver.github.io/HSCAFE-net-research" class="btn btn-primary">See our research</a>
-      <a href="https://nelsonsilver.github.io/intouch" class="btn btn-outline">Get in touch</a>
+    <div class="glow-orb"></div>
+    <div class="glow-orb2"></div>
+    <p class="hero-tag">// Launching soon — AI Research & Technology</p>
+    <h1>Building <em>Intelligent</em> Systems for a Complex World</h1>
+    <p class="hero-sub">Neo Corporation is a next-generation AI research company developing novel neural architectures that adapt, reason, and generalize — where others fail.</p>
+    <div class="hero-actions">
+      <a href="#research" class="btn-primary">View Research</a>
+      <a href="#contact" class="btn-secondary">Get in Touch</a>
     </div>
+    <p class="hero-origin">Built from <span>Uganda</span> · Scaling Globally</p>
   </section>
 
-  <!-- WHAT WE DO -->
-  <section id="what-we-do">
-    <p class="section-label reveal">// 01 — WHAT WE DO</p>
-    <h2 class="section-title reveal">Research that ships.<br/>Architecture that scales.</h2>
-    <div class="cards reveal">
-      <div class="card">
-        <div class="card-icon">⚙️</div>
-        <h3 class="card-title">AI Architecture Research</h3>
-        <p class="card-text">
-          We design novel neural architectures from first principles —
-          combining temporal hierarchy, causal discovery, associative memory,
-          and free energy minimisation into systems that learn the way
-          the world actually works.
-        </p>
-      </div>
-      <div class="card">
-        <div class="card-icon">🧪</div>
-        <h3 class="card-title">Rigorous Evaluation</h3>
-        <p class="card-text">
-          Every architecture is stress-tested against baselines on tasks
-          that expose what it can and cannot do. We report failures honestly.
-          Good science means knowing where you stand.
-        </p>
-      </div>
-      <div class="card">
-        <div class="card-icon">🚀</div>
-        <h3 class="card-title">AI Products</h3>
-        <p class="card-text">
-          Our research feeds directly into products built for the real world.
-          Starting lean, starting in Uganda, scaling outward.
-          The goal is architecture that works — not just on benchmarks.
-        </p>
-      </div>
+  <!-- STATS BAR -->
+  <div class="stats-bar">
+    <div class="stat">
+      <span class="stat-num">AI</span>
+      <span class="stat-label">Core Research Domain</span>
     </div>
-  </section>
+    <div class="stat">
+      <span class="stat-num">2026</span>
+      <span class="stat-label">Founded</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">1</span>
+      <span class="stat-label">Flagship Architecture</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">∞</span>
+      <span class="stat-label">Ambition</span>
+    </div>
+  </div>
 
-  <!-- HCASFE-NET -->
-  <section id="hcasfe">
-    <p class="section-label reveal">// 02 — FLAGSHIP RESEARCH</p>
-    <h2 class="section-title reveal">HCASFE-Net</h2>
-    <div class="hcasfe-layout">
-      <div class="hcasfe-desc reveal">
-        <p>
-          <strong>HCASFE-Net</strong> is a novel neural architecture built entirely
-          from scratch in pure NumPy — no PyTorch, no TensorFlow — running on a phone.
-          It combines five subsystems into a single unified forward pass.
-        </p>
-        <p>
-          Unlike flat models, HCASFE-Net builds explicit representations of
-          <strong>time</strong>, <strong>causality</strong>, and <strong>memory</strong>.
-          It detects when the world changes. It remembers what happened 100 steps ago.
-          It learns which signals cause which outcomes.
-        </p>
-        <p>
-          Current results show the architecture winning against a flat MLP baseline
-          on K=1 and K=5 lookahead prediction, 80% surprise detection at 76×
-          the sensitivity of a trivial detector, and near-perfect causal regime
-          fingerprinting at 96.5% accuracy.
-        </p>
-        <div class="components">
-          <div class="component-row"><span class="component-tag">H — HTN</span><span class="component-desc">Hierarchical Temporal Network (ratios 3, 10, 30)</span></div>
-          <div class="component-row"><span class="component-tag">C — Causal</span><span class="component-desc">NOTEARS-lite DAG discovery, DAG violation &lt; 0.001</span></div>
-          <div class="component-row"><span class="component-tag">A — Memory</span><span class="component-desc">Modern Hopfield associative memory, 256 slots</span></div>
-          <div class="component-row"><span class="component-tag">S — Sparse</span><span class="component-desc">Sparse routing, 6 modules, top-4 active</span></div>
-          <div class="component-row"><span class="component-tag">F — FE</span><span class="component-desc">Free energy core — KL + reconstruction</span></div>
-          <div class="component-row"><span class="component-tag">E — Workspace</span><span class="component-desc">Global workspace — 6 sources compete and broadcast</span></div>
-        </div>
+  <!-- RESEARCH -->
+  <section id="research">
+    <p class="section-tag">// Flagship Research</p>
+    <h2 class="section-title">Proprietary AI Architecture</h2>
+
+    <div class="hcasfe-highlight">
+      <p class="hcasfe-name">HCASFE-Net</p>
+      <p class="hcasfe-full">Proprietary Neural Architecture — Neo Corporation</p>
+      <p class="hcasfe-desc">HCASFE-Net is Neo Corporation's flagship research technology. It is a proprietary neural architecture designed to operate in environments conventional systems struggle with. Technical details, benchmarks, and implementation are available upon request for verified research and partnership inquiries.</p>
+      <a href="#contact" class="btn-primary">Request Details →</a>
+    </div>
+
+    <div class="research-grid">
+      <div class="research-card">
+        <div class="card-icon">🧠</div>
+        <div class="card-title">Memory</div>
+        <div class="card-result">Proprietary</div>
+        <div class="card-desc">HCASFE-Net exhibits strong long-range memory capabilities across extended time horizons, far exceeding standard baseline architectures.</div>
       </div>
-      <div class="reveal">
-        <div class="metrics">
-          <div class="metric">
-            <span class="metric-label">Surprise detection ratio</span>
-            <span class="metric-value">76.6×</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">Causal fingerprint accuracy</span>
-            <span class="metric-value">96.5%</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">Memory recall (D=100)</span>
-            <span class="metric-value">100%</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">MSE gap vs MLP baseline</span>
-            <span class="metric-value">−1.7%</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">NOTEARS DAG violation</span>
-            <span class="metric-value">0.001</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">K=1 early-regime</span>
-            <span class="metric-value">+1.0%</span>
-          </div>
-        </div>
+      <div class="research-card">
+        <div class="card-icon">🔍</div>
+        <div class="card-title">Causal Reasoning</div>
+        <div class="card-result">Proprietary</div>
+        <div class="card-desc">The architecture can identify and classify distinct signal regimes with high precision — even when raw observations appear locally identical.</div>
+      </div>
+      <div class="research-card">
+        <div class="card-icon">⚡</div>
+        <div class="card-title">Surprise Detection</div>
+        <div class="card-result">Proprietary</div>
+        <div class="card-desc">A core free-energy module enables the system to detect unexpected environmental shifts at a level significantly beyond conventional predictors.</div>
+      </div>
+      <div class="research-card">
+        <div class="card-icon">📈</div>
+        <div class="card-title">Generalisation</div>
+        <div class="card-result">Proprietary</div>
+        <div class="card-desc">Validated across multiple distinct environment classes without architectural modification — demonstrating robust transfer beyond the training regime.</div>
       </div>
     </div>
   </section>
 
-  <!-- VISION -->
-  <section id="vision">
-    <p class="section-label reveal">// 03 — VISION</p>
-    <h2 class="section-title reveal">Where we are going.</h2>
-    <p class="vision-text reveal">
-      <em>Most AI systems learn patterns.</em>
-      We want systems that understand structure —
-      <hl class="hl">why things happen, not just what happens next.</hl>
-      Neo Corporation exists to build that kind of intelligence,
-      <em>starting from Uganda,</em>
-      and scale it until it matters everywhere.
-      <br/><br/>
-      The roadmap: move HCASFE-Net to proper hardware,
-      run it on real-world data, publish the results,
-      and build products on top of an architecture
-      <em>designed to get better the longer it runs.</em>
-    </p>
-  </section>
-
-  <!-- TEAM -->
-  <section id="team">
-    <p class="section-label reveal">// 04 — TEAM</p>
-    <h2 class="section-title reveal">The people building it.</h2>
-    <div class="team-card reveal">
-      <h3 class="team-name">Nelson Silver Li Wejja</h3>
-      <p class="team-role">FOUNDER · LEAD RESEARCHER</p>
-      <p class="team-bio">
-        Self-taught AI researcher from Uganda, currently in Form 3.
-        Designed and built HCASFE-Net from scratch — architecture,
-        training loop, evaluation suite, and all six bug-fix cycles —
-        running entirely on a phone. Founded Neo Corporation to take
-        the research to the next level.
-      </p>
-      <div class="team-tags">
-        <span class="tag">AI Architecture</span>
-        <span class="tag">Causal Discovery</span>
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="about-visual">
+      <div class="about-box about-box-1">Neural Architecture</div>
+      <div class="about-box about-box-2">Uganda → Global</div>
+      <div class="about-box about-box-3">⚙</div>
+    </div>
+    <div class="about-text">
+      <p class="section-tag">// About Neo Corporation</p>
+      <h2 class="section-title">Research-First.<br/>Built to Scale.</h2>
+      <p>Neo Corporation is an AI research and technology company focused on building intelligent systems that perform where conventional architectures break down — in dynamic, unpredictable, regime-switching environments.</p>
+      <p>We are pre-launch and actively developing. Our first flagship technology, HCASFE-Net, demonstrates our commitment to original research and reproducible results before commercialization.</p>
+      <p>Founded and headquartered in Uganda, with a global ambition to contribute to the frontier of AI systems research.</p>
+      <div class="tag-row">
+        <span class="tag cyan">Neural Architecture</span>
+        <span class="tag cyan">Causal AI</span>
+        <span class="tag amber">Uganda</span>
         <span class="tag">Predictive Coding</span>
-        <span class="tag">NumPy</span>
-        <span class="tag">Uganda 🇺🇬</span>
+        <span class="tag">Free-Energy Principle</span>
+        <span class="tag">Open Research</span>
       </div>
     </div>
   </section>
 
   <!-- CONTACT -->
   <section id="contact">
-    <p class="section-label reveal">// 05 — CONTACT</p>
-    <h2 class="section-title reveal">Let's talk.</h2>
-    <div class="contact-grid reveal">
-      <div class="contact-item">
-        <p class="contact-type">EMAIL</p>
-        <a href="lnelsonsilver@gmail.com" class="contact-value"><span class="__cf_email__" data-cfemail="4628272b36272a272b27342f277606212b272f2a6825292b">[email&#160;protected]</span></a>
-      </div>
-      <div class="contact-item">
-        <p class="contact-type">WHATSAPP</p>
-        <a href="https://wa.me/256756080636" class="contact-value">+256 756 080 636</a>
-      </div>
-      <div class="contact-item">
-        <p class="contact-type">RESEARCHER</p>
-        <a href="https://nelsonsilver.github.io/NelsonSilverLi" class="contact-value">Nelson's profile →</a>
-      </div>
+    <p class="section-tag">// Get In Touch</p>
+    <h2 class="section-title">Collaborate or Follow Along</h2>
+    <p>Research inquiries, partnerships, and collaboration requests welcome.</p>
+    <div class="contact-box">
+      <p class="contact-email">For inquiries: <a href="/cdn-cgi/l/email-protection#48202d24242708262d272b273a38273a293c212726662b2725"><span class="__cf_email__" data-cfemail="4c24292020230c2229232f233e3c233e2d38252322622f2321">[email&#160;protected]</span></a></p>
+      <a href="#contact" class="btn-secondary" style="display:inline-block;">Get In Touch →</a>
     </div>
   </section>
 
   <!-- FOOTER -->
   <footer>
-    <p class="footer-left">© 2026 <span>Neo Corporation</span> · Kampala, Uganda</p>
-    <p class="footer-right">Built on research. Built to scale.</p>
+    <div class="footer-logo">NEO<span>.</span>CORP</div>
+    <div class="footer-copy">© 2026 Neo Corporation. All rights reserved.</div>
+    <div class="footer-origin">Built from <span>Uganda</span> · Scaling Globally</div>
   </footer>
 
-  <script>
-    // Scroll reveal
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) e.target.classList.add('visible');
-      });
-    }, { threshold: 0.1 });
-    document.querySelectorAll('.reveal').forEach(r => observer.observe(r));
-  </script>
-
-</body>
-</html>
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    // Scroll progress line
+    window.addEventListener('scroll', () => {
+      const sc
