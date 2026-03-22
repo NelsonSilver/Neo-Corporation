@@ -1,6 +1,6 @@
 # Neo Corporation
 
-Neo Corporation is an AI research and technology company building proprietary intelligent systems for complex, dynamic environments.
+Neo Corporation is an AI research and technology company building intelligent systems for complex, dynamic environments.
 
 ## Status
 
